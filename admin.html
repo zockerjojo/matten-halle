@@ -176,9 +176,9 @@ function karte(m) {
       <label><input type="radio" name="${gruppe}" value=""${s === "" ? " checked" : ""}> Keine Angabe</label>
     </fieldset>
     <label class="feld">Bis wann draußen
-      <input type="date" value="${esc(m.bisDatum ?? "")}"${s === "draussen" ? "" : " disabled"}>
+      <input type="date" data-feld="bisDatum" value="${esc(m.bisDatum ?? "")}"${s === "draussen" ? "" : " disabled"}>
     </label>
-    <p class="meldung" aria-live="polite"></p>
+    <label class="feld">Wieder aufgebaut ab<input type="date" data-feld="aufbauAb" value="${esc(m.aufbauAb ?? "")}"${s === "drinnen" ? "" : " disabled"}></label><p class="meldung" aria-live="polite"></p>
   </article>`;
 }
 
@@ -225,10 +225,10 @@ liste.addEventListener("change", (e) => {
   const kartenEl = e.target.closest(".karte");
   if (!kartenEl) return;
   const status = kartenEl.querySelector('input[type="radio"]:checked')?.value || null;
-  const datum = kartenEl.querySelector('input[type="date"]');
-  datum.disabled = status !== "draussen";
-  const bisDatum = status === "draussen" && datum.value ? datum.value : null;
-  speichere(kartenEl.dataset.key, { status, bisDatum }, kartenEl.querySelector(".meldung"));
+  const datum = kartenEl.querySelector('input[data-feld="bisDatum"]'); const aufbau = kartenEl.querySelector('input[data-feld="aufbauAb"]');
+  datum.disabled = status !== "draussen"; aufbau.disabled = status !== "drinnen";
+  const bisDatum = status === "draussen" && datum.value ? datum.value : null; const aufbauAb = status === "drinnen" && aufbau.value ? aufbau.value : null;
+  speichere(kartenEl.dataset.key, { status, bisDatum, aufbauAb }, kartenEl.querySelector(".meldung"));
 });
 
 /* Startliste anlegen (nur wenn die Liste leer ist) */
