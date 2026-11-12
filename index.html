@@ -181,13 +181,13 @@ function standText() {
 
 /* Karten */
 function karteGross(m) {
-  const frist = m.bisDatum ? `Bis ${datumText(m.bisDatum)}` : "Bis-Datum folgt";
+  const frist = m.bisDatum ? `Bis ${datumText(m.bisDatum)}` : "";
   const rest = m.bisDatum ? tageText(m.bisDatum) : "";
-  return `<article class="karte gross">${bild(m.key)}<div class="info"><span class="pill akzent">Aufgebaut</span><h3>${esc(m.name)}</h3><p class="datum">${esc(frist)}</p><p class="muted">${esc(rest)}</p></div></article>`;
+  return `<article class="karte gross">${bild(m.key)}<div class="info"><span class="pill akzent">Aufgebaut</span><h3>${esc(m.name)}</h3>${frist ? `<p class="datum">${esc(frist)}</p><p class="muted">${esc(rest)}</p>` : ""}</div></article>`;
 }
 function karteKlein(m) {
-  const status = m.status === "drinnen" ? "Eingeräumt" : "Keine Angabe";
-  return `<article class="karte">${bild(m.key)}<div class="info"><span class="pill">${status}</span><h3>${esc(m.name)}</h3></div></article>`;
+  const wieder = m.status === "drinnen" && m.aufbauAb ? `<p class="muted">Wieder aufgebaut ab ${esc(datumText(m.aufbauAb))}</p>` : ""; const status = m.status === "drinnen" ? "Eingeräumt" : "Keine Angabe";
+  return `<article class="karte">${bild(m.key)}<div class="info"><span class="pill">${status}</span><h3>${esc(m.name)}</h3>${wieder}</div></article>`;
 }
 
 /* Daten: live aus Firebase */
