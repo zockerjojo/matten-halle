@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Hallenwärter · Matten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EDEA; --panel:#F7F9F7; --ink:#14201B; --ink-2:#55635C; --line:#C3CCC6;
+  --accent:#17694B; --on-accent:#FFFFFF; --fehler:#B3261E;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0F1512; --panel:#18211C; --ink:#E7EEE9; --ink-2:#9BAAA1; --line:#33413A;
+  --accent:#4CC38A; --on-accent:#06150E; --fehler:#F2766B;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.4}
+.wrap{max-width:900px; margin:0 auto; padding:0 20px 40px}
+.kopf{display:flex; justify-content:space-between; align-items:center; gap:12px 16px; flex-wrap:wrap; padding-top:24px}
+.marke{font-family:var(--display); font-weight:600; font-size:24px; line-height:1; letter-spacing:.04em; text-transform:uppercase}
+.werkzeuge{display:flex; align-items:center; gap:10px 12px; flex-wrap:wrap}
+.wer{font-size:14px; color:var(--ink-2); overflow-wrap:anywhere}
+.knopf{font:inherit; font-size:15px; font-weight:600; min-height:44px; padding:8px 18px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer}
+.knopf.primaer{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.knopf[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+button:focus-visible, input:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+h1{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(36px, 6vw, 52px); line-height:1; text-transform:uppercase; text-wrap:balance}
+.muted{margin:0; font-size:15px; color:var(--ink-2)}
+.meldung{margin:0; min-height:20px; font-size:14px; color:var(--ink-2)}
+.meldung.fehler{color:var(--fehler)}
+.stapel{display:flex; flex-direction:column; gap:16px}
+.anmeldung{max-width:420px; margin:48px auto 0; display:flex; flex-direction:column; gap:16px}
+.feld{display:flex; flex-direction:column; gap:6px; font-size:15px; color:var(--ink-2)}
+input[type="email"], input[type="password"], input[type="date"]{font:inherit; font-size:16px; color:var(--ink); background:var(--panel); min-height:44px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; width:100%}
+input:disabled{opacity:.5}
+.kopfzeile{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; border-bottom:2px solid var(--ink); padding-bottom:10px}
+.liste{display:grid; grid-template-columns:minmax(0,1fr); gap:16px; padding-top:8px}
+@media (min-width:760px){ .liste{grid-template-columns:repeat(2, minmax(0,1fr))} }
+.karte{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:14px; min-width:0}
+.karte h2{margin:0; font-family:var(--display); font-weight:600; font-size:30px; line-height:1.05; text-transform:uppercase; text-wrap:balance; overflow-wrap:anywhere}
+fieldset{border:0; margin:0; padding:0; min-width:0; display:flex; flex-direction:column; gap:8px}
+legend{font-size:14px; color:var(--ink-2); padding:0 0 6px}
+.wahl label{display:flex; align-items:center; gap:12px; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; cursor:pointer; color:var(--ink)}
+.wahl input{width:20px; height:20px; margin:0; accent-color:var(--accent); flex:none}
+code{font-size:13px; overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="kopf">
+  <div class="marke">Hallenwärter · Matten</div>
+  <div class="werkzeuge">
+    <span class="wer" id="wer"></span>
+    <button class="knopf" id="dunkel" type="button" aria-pressed="false">Dunkelmodus</button>
+    <button class="knopf" id="abmelden" type="button" hidden>Abmelden</button>
+  </div>
+</header>
+
+<section id="anmeldung" class="anmeldung">
+  <h1>Anmelden</h1>
+  <form id="formular" class="stapel" novalidate>
+    <label class="feld">E-Mail
+      <input id="email" type="email" autocomplete="username" required>
+    </label>
+    <label class="feld">Passwort
+      <input id="passwort" type="password" autocomplete="current-password" required>
+    </label>
+    <button class="knopf primaer" type="submit">Anmelden</button>
+    <p class="meldung fehler" id="anmeldung-fehler" role="alert"></p>
+  </form>
+</section>
+
+<section id="panel" class="stapel" hidden>
+  <div class="kopfzeile"><h1>Matten</h1></div>
+  <p class="muted">Änderungen erscheinen sofort auf der öffentlichen Anzeige.</p>
+  <div class="werkzeuge">
+    <button class="knopf primaer" id="startliste" type="button" hidden>Startliste anlegen</button>
+    <span class="meldung" id="startliste-meldung" aria-live="polite"></span>
+  </div>
+  <div class="liste" id="liste"></div>
+  <p class="muted">Deine Benutzer-ID (für die Freischaltung): <code id="uid"></code></p>
+</section>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, onValue, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { firebaseConfig } from "./js/config.js";
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+/* Dunkelmodus merken */
+const wurzel = document.documentElement;
+function thema(dunkel) {
+  wurzel.dataset.theme = dunkel ? "dark" : "light";
+  $("dunkel").setAttribute("aria-pressed", String(dunkel));
+  try { localStorage.setItem("matten-thema", dunkel ? "dark" : "light"); } catch (e) {}
+}
+let gemerkt = null;
+try { gemerkt = localStorage.getItem("matten-thema"); } catch (e) {}
+thema(gemerkt ? gemerkt === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches);
+$("dunkel").addEventListener("click", () => thema(wurzel.dataset.theme !== "dark"));
+
+/* Startliste: die vier Anlagen aus dem Hallenbestand */
+const STARTLISTE = [
+  { key: "stabhochsprung", name: "Stabhochsprung", reihenfolge: 1, status: "draussen", bisDatum: "2026-12-14" },
+  { key: "gruene-schueler-hochsprunganlage", name: "Grüne Schüler-Hochsprunganlage", reihenfolge: 2 },
+  { key: "gelbe-hochsprunganlage", name: "Gelbe Hochsprunganlage", reihenfolge: 3 },
+  { key: "gruene-hochsprunganlage", name: "Grüne Hochsprunganlage", reihenfolge: 4 },
+];
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+function fehlerText(code) {
+  switch (code) {
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+    case "auth/user-not-found":
+      return "E-Mail oder Passwort stimmen nicht.";
+    case "auth/invalid-email":
+      return "Bitte eine gültige E-Mail-Adresse eingeben.";
+    case "auth/too-many-requests":
+      return "Zu viele Versuche. Bitte warte einen Moment.";
+    case "auth/network-request-failed":
+      return "Keine Verbindung zum Server.";
+    default:
+      return "Anmeldung hat nicht geklappt.";
+  }
+}
+
+/* Anmeldung */
+onAuthStateChanged(auth, (user) => {
+  $("anmeldung").hidden = !!user;
+  $("panel").hidden = !user;
+  $("abmelden").hidden = !user;
+  $("wer").textContent = user ? user.email : "";
+  $("uid").textContent = user ? user.uid : "";
+});
+$("formular").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("anmeldung-fehler").textContent = "";
+  try {
+    await signInWithEmailAndPassword(auth, $("email").value.trim(), $("passwort").value);
+    $("passwort").value = "";
+  } catch (err) {
+    $("anmeldung-fehler").textContent = fehlerText(err.code);
+  }
+});
+$("abmelden").addEventListener("click", () => signOut(auth));
+
+/* Karten */
+function karte(m) {
+  const s = m.status ?? "";
+  const gruppe = `s-${m.key}`;
+  return `<article class="karte" data-key="${esc(m.key)}">
+    <h2>${esc(m.name)}</h2>
+    <fieldset class="wahl">
+      <legend>Status</legend>
+      <label><input type="radio" name="${gruppe}" value="draussen"${s === "draussen" ? " checked" : ""}> Draußen (aufgebaut)</label>
+      <label><input type="radio" name="${gruppe}" value="drinnen"${s === "drinnen" ? " checked" : ""}> Drinnen (eingeräumt)</label>
+      <label><input type="radio" name="${gruppe}" value=""${s === "" ? " checked" : ""}> Keine Angabe</label>
+    </fieldset>
+    <label class="feld">Bis wann draußen
+      <input type="date" value="${esc(m.bisDatum ?? "")}"${s === "draussen" ? "" : " disabled"}>
+    </label>
+    <p class="meldung" aria-live="polite"></p>
+  </article>`;
+}
+
+/* Daten live aus Firebase; während eine Eingabe läuft, wird nicht neu gezeichnet */
+let fokus = false;
+let ausstehend = null;
+function zeichne(v) {
+  const liste = Object.entries(v)
+    .map(([key, m]) => ({ key, ...m }))
+    .sort((a, b) => (a.reihenfolge ?? 99) - (b.reihenfolge ?? 99) || String(a.name).localeCompare(b.name, "de"));
+  $("startliste").hidden = liste.length > 0;
+  $("liste").innerHTML = liste.map(karte).join("");
+}
+onValue(ref(db, "matten"), (snap) => {
+  const v = snap.val() ?? {};
+  if (fokus) { ausstehend = v; return; }
+  zeichne(v);
+});
+const liste = $("liste");
+liste.addEventListener("focusin", () => { fokus = true; });
+liste.addEventListener("focusout", (e) => {
+  if (liste.contains(e.relatedTarget)) return;
+  fokus = false;
+  if (ausstehend) { const v = ausstehend; ausstehend = null; zeichne(v); }
+});
+
+/* Speichern: jede Änderung geht direkt in die Datenbank */
+async function speichere(key, werte, meldung) {
+  meldung.classList.remove("fehler");
+  meldung.textContent = "Speichere …";
+  try {
+    await update(ref(db, `matten/${key}`), { ...werte, geaendert: serverTimestamp() });
+    meldung.textContent = "Gespeichert. Die Anzeige ist aktualisiert.";
+  } catch (err) {
+    console.error(err);
+    const rechte = /PERMISSION_DENIED/.test(`${err?.code ?? ""} ${err?.message ?? ""}`);
+    meldung.classList.add("fehler");
+    meldung.textContent = rechte
+      ? "Keine Berechtigung. Bitte die Benutzer-ID freischalten lassen."
+      : "Speichern hat nicht geklappt. Bitte noch einmal versuchen.";
+  }
+}
+liste.addEventListener("change", (e) => {
+  const kartenEl = e.target.closest(".karte");
+  if (!kartenEl) return;
+  const status = kartenEl.querySelector('input[type="radio"]:checked')?.value || null;
+  const datum = kartenEl.querySelector('input[type="date"]');
+  datum.disabled = status !== "draussen";
+  const bisDatum = status === "draussen" && datum.value ? datum.value : null;
+  speichere(kartenEl.dataset.key, { status, bisDatum }, kartenEl.querySelector(".meldung"));
+});
+
+/* Startliste anlegen (nur wenn die Liste leer ist) */
+$("startliste").addEventListener("click", async () => {
+  const meldung = $("startliste-meldung");
+  const werte = {};
+  STARTLISTE.forEach(({ key, ...m }) => { werte[`matten/${key}`] = { ...m, geaendert: serverTimestamp() }; });
+  meldung.textContent = "Lege die Startliste an …";
+  try {
+    await update(ref(db), werte);
+    meldung.textContent = "Startliste ist angelegt.";
+  } catch (err) {
+    console.error(err);
+    meldung.textContent = "Das hat nicht geklappt. Bitte noch einmal versuchen.";
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matten-Übersicht Helmut Körchnig Halle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EDEA; --panel:#F7F9F7; --ink:#14201B; --ink-2:#55635C; --line:#C3CCC6;
+  --accent:#17694B; --on-accent:#FFFFFF; --mute:#C3CCC6; --mute-ink:#14201B;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0F1512; --panel:#18211C; --ink:#E7EEE9; --ink-2:#9BAAA1; --line:#33413A;
+  --accent:#4CC38A; --on-accent:#06150E; --mute:#33413A; --mute-ink:#E7EEE9;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.4}
+.wrap{max-width:1200px; margin:0 auto; padding:0 20px 40px}
+.kopf{display:flex; justify-content:space-between; align-items:center; gap:12px 16px; flex-wrap:wrap; padding-top:24px}
+.marke{font-family:var(--display); font-weight:600; font-size:26px; line-height:1; letter-spacing:.04em; text-transform:uppercase}
+.werkzeuge{display:flex; align-items:center; gap:12px 16px; flex-wrap:wrap}
+.stand{font-size:15px; color:var(--ink-2); font-variant-numeric:tabular-nums}
+.knopf{font:inherit; font-size:15px; font-weight:600; min-height:44px; padding:8px 18px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer}
+.knopf[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+button:focus-visible, a:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.einstieg{display:flex; flex-direction:column; gap:16px; padding:56px 0 40px}
+h1{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(40px, 6vw, 64px); line-height:1; text-transform:uppercase; text-wrap:balance}
+.lead{margin:0; max-width:640px; font-size:clamp(17px, 2vw, 20px); color:var(--ink-2)}
+.chips{display:flex; gap:10px; flex-wrap:wrap; padding-top:8px}
+.chip{font-size:15px; font-weight:600; padding:7px 14px; border-radius:999px; background:var(--mute); color:var(--mute-ink)}
+.chip.akzent{background:var(--accent); color:var(--on-accent)}
+.block{display:flex; flex-direction:column; gap:24px; padding-bottom:48px}
+.kopfzeile{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; border-bottom:2px solid var(--ink); padding-bottom:10px}
+h2{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(30px, 4vw, 40px); line-height:1; text-transform:uppercase}
+.muted{margin:0; font-size:15px; color:var(--ink-2)}
+.raster{display:grid; grid-template-columns:minmax(0,1fr); gap:24px}
+@media (min-width:700px){ .raster.klein{grid-template-columns:repeat(2, minmax(0,1fr))} }
+@media (min-width:1000px){ .raster.klein{grid-template-columns:repeat(3, minmax(0,1fr))} }
+.karte{background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; display:flex; flex-direction:column}
+.karte svg{display:block; width:100%; height:auto}
+.karte.gross{display:grid; grid-template-columns:minmax(0,1fr)}
+@media (min-width:800px){ .karte.gross{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)} }
+.info{display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:10px; padding:20px; min-width:0}
+.karte.gross .info{padding:28px 32px; gap:12px}
+.pill{font-size:14px; font-weight:600; padding:5px 11px; border-radius:999px; background:var(--mute); color:var(--mute-ink)}
+.pill.akzent{background:var(--accent); color:var(--on-accent)}
+h3{margin:0; font-family:var(--display); font-weight:600; font-size:32px; line-height:1.05; text-transform:uppercase; text-wrap:balance; overflow-wrap:anywhere}
+.karte.gross h3{font-size:clamp(36px, 5vw, 48px)}
+.datum{margin:0; font-size:20px; font-weight:600}
+.karte.gross .datum{font-size:24px}
+.fuss{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; border-top:1px solid var(--line); padding:24px 0 0; font-size:15px; color:var(--ink-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="kopf">
+  <div class="marke">Helmut Körchnig Halle</div>
+  <div class="werkzeuge">
+    <span class="stand" id="stand"></span>
+    <button class="knopf" id="dunkel" type="button" aria-pressed="false">Dunkelmodus</button>
+  </div>
+</header>
+
+<div class="einstieg">
+  <h1>Welche Matten sind gerade aufgebaut?</h1>
+  <p class="lead">Hier siehst du, welche Matten und Anlagen gerade stehen und bis wann sie bleiben.</p>
+  <div class="chips">
+    <span class="chip akzent" id="chip-draussen">0 aufgebaut</span>
+    <span class="chip" id="chip-weitere">0 weitere Anlagen</span>
+  </div>
+</div>
+
+<section class="block">
+  <div class="kopfzeile"><h2>Aufgebaut</h2><span class="muted" id="zaehl-draussen"></span></div>
+  <div class="raster" id="liste-draussen"></div>
+  <p class="muted" id="leer-draussen" hidden>Gerade ist keine Matte aufgebaut.</p>
+</section>
+
+<section class="block">
+  <div class="kopfzeile"><h2>Weitere Anlagen</h2><span class="muted" id="zaehl-weitere"></span></div>
+  <div class="raster klein" id="liste-weitere"></div>
+</section>
+
+<footer class="fuss">
+  <span id="verbindung">Verbinde …</span>
+  <span>Aktualisiert vom Hallenteam</span>
+</footer>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { firebaseConfig } from "./js/config.js";
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+/* Design: Dunkelmodus merken */
+const wurzel = document.documentElement;
+function thema(dunkel) {
+  wurzel.dataset.theme = dunkel ? "dark" : "light";
+  $("dunkel").setAttribute("aria-pressed", String(dunkel));
+  try { localStorage.setItem("matten-thema", dunkel ? "dark" : "light"); } catch (e) {}
+}
+let gemerkt = null;
+try { gemerkt = localStorage.getItem("matten-thema"); } catch (e) {}
+thema(gemerkt ? gemerkt === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches);
+$("dunkel").addEventListener("click", () => thema(wurzel.dataset.theme !== "dark"));
+
+/* Platzhalterbilder: Matten in ihrer Farbe */
+const STAB = `<svg viewBox="0 0 640 380" aria-hidden="true" focusable="false">
+  <rect width="640" height="380" fill="#DCE3DE"/>
+  <rect width="640" height="150" fill="#E9EDEA"/>
+  <path d="M0 150 H640" stroke="#C3CCC6" stroke-width="2" fill="none"/>
+  <polygon points="110,250 530,250 600,360 40,360" fill="#17694B"/>
+  <path d="M190 250 L150 360 M290 250 L260 360 M390 250 L370 360 M490 250 L480 360" stroke="#0E4A33" stroke-width="2" fill="none"/>
+  <rect x="420" y="96" width="8" height="158" fill="#14201B"/>
+  <rect x="512" y="96" width="8" height="158" fill="#14201B"/>
+  <line x1="424" y1="130" x2="516" y2="130" stroke="#14201B" stroke-width="5"/>
+  <line x1="160" y1="330" x2="452" y2="92" stroke="#F29F05" stroke-width="7" stroke-linecap="round"/>
+</svg>`;
+
+function hoch(mat, naht, niedrig = false) {
+  const stander = niedrig
+    ? `<rect x="226" y="150" width="8" height="90" fill="#14201B"/>
+  <rect x="406" y="150" width="8" height="90" fill="#14201B"/>
+  <line x1="230" y1="168" x2="410" y2="168" stroke="#55635C" stroke-width="6"/>`
+    : `<rect x="196" y="92" width="8" height="150" fill="#14201B"/>
+  <rect x="436" y="92" width="8" height="150" fill="#14201B"/>
+  <line x1="200" y1="124" x2="440" y2="124" stroke="#55635C" stroke-width="6"/>`;
+  return `<svg viewBox="0 0 640 380" aria-hidden="true" focusable="false">
+  <rect width="640" height="380" fill="#DCE3DE"/>
+  <rect width="640" height="150" fill="#E9EDEA"/>
+  <path d="M0 150 H640" stroke="#C3CCC6" stroke-width="2" fill="none"/>
+  <polygon points="150,240 490,240 560,350 80,350" fill="${mat}"/>
+  <path d="M250 240 L220 350 M350 240 L340 350 M430 240 L440 350" stroke="${naht}" stroke-width="2" fill="none"/>
+  ${stander}
+</svg>`;
+}
+
+const BILDER = {
+  "stabhochsprung": STAB,
+  "gruene-schueler-hochsprunganlage": hoch("#4FA66E", "#378A59", true),
+  "gelbe-hochsprunganlage": hoch("#F2C230", "#D9A81A"),
+  "gruene-hochsprunganlage": hoch("#17694B", "#0E4A33"),
+};
+const bild = (key) => BILDER[key] ?? hoch("#9AA8A0", "#7C8C84");
+
+/* Datum und Restzeit */
+function datumText(iso) {
+  const [j, m, t] = iso.split("-").map(Number);
+  return new Date(j, m - 1, t).toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });
+}
+function tageText(iso) {
+  const [j, m, t] = iso.split("-").map(Number);
+  const ziel = new Date(j, m - 1, t);
+  const heute = new Date();
+  heute.setHours(0, 0, 0, 0);
+  const tage = Math.round((ziel - heute) / 86400000);
+  if (tage < 0) return "Zeitraum abgelaufen";
+  if (tage === 0) return "Heute ist der letzte Tag";
+  if (tage === 1) return "Noch 1 Tag";
+  return `Noch ${tage} Tage`;
+}
+function standText() {
+  const jetzt = new Date();
+  const tag = jetzt.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
+  const zeit = jetzt.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  return `Stand: ${tag}, ${zeit} Uhr`;
+}
+
+/* Karten */
+function karteGross(m) {
+  const frist = m.bisDatum ? `Bis ${datumText(m.bisDatum)}` : "Bis-Datum folgt";
+  const rest = m.bisDatum ? tageText(m.bisDatum) : "";
+  return `<article class="karte gross">${bild(m.key)}<div class="info"><span class="pill akzent">Aufgebaut</span><h3>${esc(m.name)}</h3><p class="datum">${esc(frist)}</p><p class="muted">${esc(rest)}</p></div></article>`;
+}
+function karteKlein(m) {
+  const status = m.status === "drinnen" ? "Eingeräumt" : "Keine Angabe";
+  return `<article class="karte">${bild(m.key)}<div class="info"><span class="pill">${status}</span><h3>${esc(m.name)}</h3></div></article>`;
+}
+
+/* Daten: live aus Firebase */
+let daten = {};
+function sortiert(liste) {
+  return liste.sort((a, b) => (a.reihenfolge ?? 99) - (b.reihenfolge ?? 99) || String(a.name).localeCompare(b.name, "de"));
+}
+function zeichne() {
+  const liste = sortiert(Object.entries(daten).map(([key, m]) => ({ key, ...m })));
+  const draussen = liste.filter((m) => m.status === "draussen");
+  const weitere = liste.filter((m) => m.status !== "draussen");
+  $("chip-draussen").textContent = `${draussen.length} aufgebaut`;
+  $("chip-weitere").textContent = `${weitere.length} weitere Anlagen`;
+  $("zaehl-draussen").textContent = `${draussen.length} ${draussen.length === 1 ? "Matte" : "Matten"}`;
+  $("zaehl-weitere").textContent = `${weitere.length} ${weitere.length === 1 ? "Anlage" : "Anlagen"}`;
+  $("leer-draussen").hidden = draussen.length > 0;
+  $("liste-draussen").innerHTML = draussen.map(karteGross).join("");
+  $("liste-weitere").innerHTML = weitere.map(karteKlein).join("");
+  $("stand").textContent = standText();
+}
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+onValue(ref(db, "matten"), (snap) => {
+  daten = snap.val() ?? {};
+  zeichne();
+});
+onValue(ref(db, ".info/connected"), (snap) => {
+  $("verbindung").textContent = snap.val() ? "Live verbunden" : "Keine Verbindung, die Anzeige kann veraltet sein";
+});
+setInterval(zeichne, 60000);
+</script>
+</body>
+</html>
