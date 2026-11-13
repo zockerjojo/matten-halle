@@ -2,7 +2,7 @@
 
 Zwei Seiten, die über Firebase live verbunden sind:
 
-- `index.html`: öffentliche Anzeige für Sportler, nur lesen. Eine Tabelle mit Status und Zeit, ohne Scrollen auf dem Handy.
+- `index.html`: öffentliche Anzeige für Sportler, nur lesen. Eine Tabelle mit Status und den voraussichtlichen Terminen.
 - `admin.html`: Bereich für die Hallenwärter, nur mit Zugangscode
 
 Jede Änderung im Hallenwärter-Bereich erscheint sofort auf der öffentlichen Anzeige.
@@ -28,7 +28,10 @@ Den neuen Code unter `zugang/code` eintragen. Alle bisherigen Anmeldungen werden
 - `sub`: Zusatz unter dem Namen, z. B. „Benz · Gelb“
 - `art`: `anlage` oder `tribuene`
 - `status`: bei `anlage` entweder `aufgebaut` (grün) oder `abgebaut` (rot), bei `tribuene` entweder `eingefahren` (grün) oder `ausgefahren` (rot). Fehlt der Status, erscheint der Eintrag rot.
-- `bis`: bis wann, Format `JJJJ-MM-TThh:mm`, z. B. `2026-12-14T18:00`. Fehlt die Zeit, steht „Zeit folgt“.
+- `aus`: nächster Wechsel nach draußen (bei `anlage` „wird abgebaut“, bei `tribuene` „wird rausgefahren“). Format `JJJJ-MM-TThh:mm`, z. B. `2026-11-16T08:00`.
+- `ein`: nächster Wechsel zurück (bei `anlage` „wird wieder aufgebaut“, bei `tribuene` „wird reingefahren“), gleiches Format.
+
+Ein Termin wird nur gespeichert, wenn Datum und Uhrzeit beide ausgefüllt sind. Fehlt ein Termin, steht „Termine folgen“. Die Anzeige nennt immer den nächsten Wechsel zuerst.
 - `reihenfolge`: Sortierung auf der Anzeige
 - `geaendert`: Zeitpunkt der letzten Änderung
 

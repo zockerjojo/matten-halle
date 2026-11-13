@@ -41,7 +41,11 @@ tbody th{font-weight:400}
 .pille{display:inline-block; padding:3px 9px; border-radius:999px; color:var(--weiss); font-size:14px; font-weight:600; white-space:nowrap}
 .pille.gruen{background:var(--gruen)}
 .pille.rot{background:var(--rot)}
-.bis{display:block; margin-top:4px; font-size:13px; color:var(--ink2)}
+.termin{margin:6px 0 0; font-size:15px; line-height:1.3; color:var(--ink)}
+.zustand{display:block; font-size:14px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--ink2)}
+.kasten{margin:6px 0 0; padding:8px 10px; border-radius:10px; color:var(--weiss); font-family:var(--display); font-weight:600; font-size:18px; line-height:1.15}
+.kasten.gruen{background:var(--gruen)}
+.kasten.rot{background:var(--rot)}
 .leer{color:var(--ink2); font-size:15px}
 .verbindung{margin:0; font-size:13px; font-weight:600; color:var(--ink)}
 .fuss{margin-top:auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:2px 12px; font-size:13px; color:var(--ink2)}
@@ -73,7 +77,6 @@ tbody th{font-weight:400}
 <p class="verbindung" id="verbindung" hidden>Keine Verbindung. Die Angaben können veraltet sein.</p>
 
 <footer class="fuss">
-  <span>Zeiten sind voraussichtlich</span>
   <span id="stand">Stand: –</span>
 </footer>
 
@@ -105,7 +108,14 @@ const ZUSTAENDE = {
   tribuene: { eingefahren: ["Eingefahren", true], ausgefahren: ["Ausgefahren", false] },
 };
 const OHNE_STATUS = { anlage: "abgebaut", tribuene: "ausgefahren" };
-const BIS = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
+/* Wörter für die Sätze: "aus" = Abbau bzw. Ausfahren, "ein" = Wiederaufbau bzw. Einfahren */
+const VERBEN = {
+  anlage: { aus: "abgebaut", ein: "wieder aufgebaut" },
+  tribuene: { aus: "rausgefahren", ein: "reingefahren" },
+};
+const WOCHENTAGE = ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."];
+const ZEITPUNKT = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
+const artVon = (m) => (m.art === "tribuene" ? "tribuene" : "anlage");
 
 function zustand(m) {
   const art = m.art === "tribuene" ? "tribuene" : "anlage";
@@ -115,18 +125,40 @@ function zustand(m) {
   return { text, gruen, gesetzt };
 }
 
-/* Bis-Zeit: "2026-12-14T18:00" wird zu "bis 14.12., 18:00" */
-function bisText(bis) {
-  const t = BIS.exec(bis ?? "");
-  return t ? `bis ${t[3]}.${t[2]}., ${t[4]}:${t[5]}` : "";
+/* "2026-11-16T08:00" wird zu "Wird voraussichtlich am Mo., 16.11. um 08:00 Uhr abgebaut." */
+function satz(zeit, verb) {
+  const t = ZEITPUNKT.exec(zeit ?? "");
+  if (!t) return "";
+  const [, jahr, monat, tag, std, min] = t;
+  const wochentag = WOCHENTAGE[new Date(Date.UTC(+jahr, +monat - 1, +tag)).getUTCDay()];
+  return `Wird voraussichtlich am ${wochentag}, ${tag}.${monat}. um ${std}:${min} Uhr ${verb}.`;
+}
+
+/* Zuerst der nächste Wechsel: bei grün das Abbauen bzw. Ausfahren, bei rot das Aufbauen bzw. Einfahren */
+function saetze(m, z) {
+  const { aus, ein } = VERBEN[artVon(m)];
+  const liste = z.gruen
+    ? [satz(m.aus, aus), satz(m.ein, ein)]
+    : [satz(m.ein, ein), satz(m.aus, aus)];
+  return liste.filter(Boolean);
 }
 
 function zeile(m) {
   const z = zustand(m);
-  const frist = bisText(m.bis) || (z.gesetzt ? "Zeit folgt" : "");
+  const termine = saetze(m, z);
+  const zeiten = termine.length
+    ? termine.map((s) => `<p class="termin">${esc(s)}</p>`).join("")
+    : `<p class="termin">Termine folgen.</p>`;
+  const farbe = z.gruen ? "gruen" : "rot";
+  if (artVon(m) === "tribuene") {
+    return `<tr>
+    <th scope="row"><span class="anlage">${esc(m.name)}</span></th>
+    <td><span class="zustand">${esc(z.text)}</span><p class="kasten ${farbe}">110 Meter Sprintgerade ${z.gruen ? "nutzbar" : "nicht nutzbar"}</p>${zeiten}</td>
+  </tr>`;
+  }
   return `<tr>
-    <th scope="row"><span class="anlage">${esc(m.name)}</span><span class="sub">${esc(m.sub)}</span></th>
-    <td><span class="pille ${z.gruen ? "gruen" : "rot"}">${esc(z.text)}</span>${frist ? `<span class="bis">${esc(frist)}</span>` : ""}</td>
+    <th scope="row"><span class="anlage">${esc(m.name)}</span>${m.sub ? `<span class="sub">${esc(m.sub)}</span>` : ""}</th>
+    <td><span class="pille ${farbe}">${esc(z.text)}</span>${zeiten}</td>
   </tr>`;
 }
 

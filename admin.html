@@ -116,7 +116,7 @@ const STARTLISTE = [
   { key: "stab-vennekel", name: "Stabhochsprunganlage", sub: "Vennekel · Grün", art: "anlage", reihenfolge: 2 },
   { key: "hoch-benz", name: "Hochsprunganlage", sub: "Benz · Gelb", art: "anlage", reihenfolge: 3 },
   { key: "hoch-schulsport", name: "Hochsprunganlage", sub: "Schulsport · Blau", art: "anlage", reihenfolge: 4 },
-  { key: "tribuene-nord", name: "Tribüne Nord", sub: "110 Meter Sprintgerade nutzbar", art: "tribuene", reihenfolge: 5 },
+  { key: "tribuene-nord", name: "Tribüne Nord", art: "tribuene", reihenfolge: 5 },
 ];
 
 const app = initializeApp(firebaseConfig);
@@ -196,27 +196,39 @@ async function zugangAbgelaufen(err) {
   return true;
 }
 
-/* Karten: zwei Status-Optionen je Art, daneben Datum und Uhrzeit */
+/* Karten: Status je Art, darunter zwei Termine. Ein Termin wird erst gespeichert, wenn Datum und Uhrzeit ausgefüllt sind. */
 const OPTIONEN = {
   anlage: [["aufgebaut", "Aufgebaut (grüne Anzeige)"], ["abgebaut", "Abgebaut (rote Anzeige)"]],
   tribuene: [["eingefahren", "Eingefahren (grüne Anzeige)"], ["ausgefahren", "Ausgefahren (rote Anzeige)"]],
 };
-const BIS_TEILE = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})$/;
+const TERMINE = {
+  anlage: { aus: "Wird abgebaut am", ein: "Wird wieder aufgebaut am" },
+  tribuene: { aus: "Wird rausgefahren am", ein: "Wird reingefahren am" },
+};
+const ZEIT_TEILE = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})$/;
+
+function termin(m, art, paar) {
+  const teile = ZEIT_TEILE.exec(m[paar] ?? "");
+  return `<fieldset class="paar">
+      <legend>${TERMINE[art][paar]}</legend>
+      <div class="zeit">
+        <label class="feld">Datum<input type="date" data-paar="${paar}" data-feld="datum" value="${esc(teile ? teile[1] : "")}"></label>
+        <label class="feld">Uhrzeit<input type="time" data-paar="${paar}" data-feld="zeit" value="${esc(teile ? teile[2] : "")}"></label>
+      </div>
+    </fieldset>`;
+}
 
 function karte(m) {
   const art = m.art === "tribuene" ? "tribuene" : "anlage";
   const gruppe = `s-${m.key}`;
-  const teile = BIS_TEILE.exec(m.bis ?? "");
   const wahl = OPTIONEN[art]
     .map(([wert, text]) => `<label><input type="radio" name="${esc(gruppe)}" value="${wert}"${m.status === wert ? " checked" : ""}> ${text}</label>`)
     .join("");
   return `<article class="karte" data-key="${esc(m.key)}">
-    <div class="karte-kopf"><h2>${esc(m.name)}</h2><p class="muted">${esc(m.sub)}</p></div>
+    <div class="karte-kopf"><h2>${esc(m.name)}</h2>${m.sub ? `<p class="muted">${esc(m.sub)}</p>` : ""}</div>
     <fieldset class="wahl"><legend>Status</legend>${wahl}</fieldset>
-    <div class="zeit">
-      <label class="feld">Bis wann<input type="date" data-feld="datum" value="${esc(teile ? teile[1] : "")}"></label>
-      <label class="feld">Uhrzeit<input type="time" data-feld="zeit" value="${esc(teile ? teile[2] : "")}"></label>
-    </div>
+    ${termin(m, art, "aus")}
+    ${termin(m, art, "ein")}
     <p class="meldung" aria-live="polite"></p>
   </article>`;
 }
@@ -269,10 +281,12 @@ liste.addEventListener("change", (e) => {
     speichere(key, { status: e.target.value }, meldung);
     return;
   }
-  const datum = kartenEl.querySelector('input[data-feld="datum"]').value;
-  const zeit = kartenEl.querySelector('input[data-feld="zeit"]').value.slice(0, 5);
+  const paar = e.target.dataset.paar;
+  if (!paar) return;
+  const datum = kartenEl.querySelector(`input[data-paar="${paar}"][data-feld="datum"]`).value;
+  const zeit = kartenEl.querySelector(`input[data-paar="${paar}"][data-feld="zeit"]`).value.slice(0, 5);
   if (!datum && !zeit) {
-    speichere(key, { bis: null }, meldung);
+    speichere(key, { [paar]: null }, meldung);
     return;
   }
   if (!datum || !zeit) {
@@ -280,7 +294,7 @@ liste.addEventListener("change", (e) => {
     meldung.textContent = "Bitte Datum und Uhrzeit eintragen.";
     return;
   }
-  speichere(key, { bis: `${datum}T${zeit}` }, meldung);
+  speichere(key, { [paar]: `${datum}T${zeit}` }, meldung);
 });
 
 /* Startliste anlegen (nur wenn die Liste leer ist) */
