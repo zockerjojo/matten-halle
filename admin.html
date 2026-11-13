@@ -40,18 +40,18 @@ h1{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(36px, 
 .stapel{display:flex; flex-direction:column; gap:16px}
 .anmeldung{max-width:420px; margin:48px auto 0; display:flex; flex-direction:column; gap:16px}
 .feld{display:flex; flex-direction:column; gap:6px; font-size:15px; color:var(--ink-2)}
-input[type="email"], input[type="password"], input[type="date"]{font:inherit; font-size:16px; color:var(--ink); background:var(--panel); min-height:44px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; width:100%}
-input:disabled{opacity:.5}
+input[type="password"], input[type="date"], input[type="time"]{font:inherit; font-size:16px; color:var(--ink); background:var(--panel); min-height:44px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; width:100%; min-width:0}
 .kopfzeile{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; border-bottom:2px solid var(--ink); padding-bottom:10px}
 .liste{display:grid; grid-template-columns:minmax(0,1fr); gap:16px; padding-top:8px}
 @media (min-width:760px){ .liste{grid-template-columns:repeat(2, minmax(0,1fr))} }
 .karte{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:14px; min-width:0}
+.karte-kopf{display:flex; flex-direction:column; gap:4px}
 .karte h2{margin:0; font-family:var(--display); font-weight:600; font-size:30px; line-height:1.05; text-transform:uppercase; text-wrap:balance; overflow-wrap:anywhere}
 fieldset{border:0; margin:0; padding:0; min-width:0; display:flex; flex-direction:column; gap:8px}
 legend{font-size:14px; color:var(--ink-2); padding:0 0 6px}
 .wahl label{display:flex; align-items:center; gap:12px; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; cursor:pointer; color:var(--ink)}
 .wahl input{width:20px; height:20px; margin:0; accent-color:var(--accent); flex:none}
-code{font-size:13px; overflow-wrap:anywhere}
+.zeit{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:12px}
 </style>
 </head>
 <body>
@@ -110,12 +110,13 @@ try { gemerkt = localStorage.getItem("matten-thema"); } catch (e) {}
 thema(gemerkt ? gemerkt === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches);
 $("dunkel").addEventListener("click", () => thema(wurzel.dataset.theme !== "dark"));
 
-/* Startliste: die vier Anlagen aus dem Hallenbestand */
+/* Startliste: die fünf Einträge ohne Status und ohne Zeit. Das Hallenteam trägt sie selbst ein. */
 const STARTLISTE = [
-  { key: "stabhochsprung", name: "Stabhochsprung", reihenfolge: 1, status: "draussen", bisDatum: "2026-12-14" },
-  { key: "gruene-schueler-hochsprunganlage", name: "Grüne Schüler-Hochsprunganlage", reihenfolge: 2 },
-  { key: "gelbe-hochsprunganlage", name: "Gelbe Hochsprunganlage", reihenfolge: 3 },
-  { key: "gruene-hochsprunganlage", name: "Grüne Hochsprunganlage", reihenfolge: 4 },
+  { key: "stab-benz", name: "Stabhochsprunganlage", sub: "Benz · Gelb", art: "anlage", reihenfolge: 1 },
+  { key: "stab-vennekel", name: "Stabhochsprunganlage", sub: "Vennekel · Grün", art: "anlage", reihenfolge: 2 },
+  { key: "hoch-benz", name: "Hochsprunganlage", sub: "Benz · Gelb", art: "anlage", reihenfolge: 3 },
+  { key: "hoch-schulsport", name: "Hochsprunganlage", sub: "Schulsport · Blau", art: "anlage", reihenfolge: 4 },
+  { key: "tribuene-nord", name: "Tribüne Nord", sub: "110 Meter Sprintgerade nutzbar", art: "tribuene", reihenfolge: 5 },
 ];
 
 const app = initializeApp(firebaseConfig);
@@ -195,32 +196,40 @@ async function zugangAbgelaufen(err) {
   return true;
 }
 
-/* Karten */
+/* Karten: zwei Status-Optionen je Art, daneben Datum und Uhrzeit */
+const OPTIONEN = {
+  anlage: [["aufgebaut", "Aufgebaut (grüne Anzeige)"], ["abgebaut", "Abgebaut (rote Anzeige)"]],
+  tribuene: [["eingefahren", "Eingefahren (grüne Anzeige)"], ["ausgefahren", "Ausgefahren (rote Anzeige)"]],
+};
+const BIS_TEILE = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})$/;
+
 function karte(m) {
-  const s = m.status ?? "";
+  const art = m.art === "tribuene" ? "tribuene" : "anlage";
   const gruppe = `s-${m.key}`;
+  const teile = BIS_TEILE.exec(m.bis ?? "");
+  const wahl = OPTIONEN[art]
+    .map(([wert, text]) => `<label><input type="radio" name="${esc(gruppe)}" value="${wert}"${m.status === wert ? " checked" : ""}> ${text}</label>`)
+    .join("");
   return `<article class="karte" data-key="${esc(m.key)}">
-    <h2>${esc(m.name)}</h2>
-    <fieldset class="wahl">
-      <legend>Status</legend>
-      <label><input type="radio" name="${gruppe}" value="draussen"${s === "draussen" ? " checked" : ""}> Draußen (aufgebaut)</label>
-      <label><input type="radio" name="${gruppe}" value="drinnen"${s === "drinnen" ? " checked" : ""}> Drinnen (eingeräumt)</label>
-      <label><input type="radio" name="${gruppe}" value=""${s === "" ? " checked" : ""}> Keine Angabe</label>
-    </fieldset>
-    <label class="feld">Bis wann draußen
-      <input type="date" data-feld="bisDatum" value="${esc(m.bisDatum ?? "")}"${s === "draussen" ? "" : " disabled"}>
-    </label>
-    <label class="feld">Wieder aufgebaut ab<input type="date" data-feld="aufbauAb" value="${esc(m.aufbauAb ?? "")}"${s === "drinnen" ? "" : " disabled"}></label><p class="meldung" aria-live="polite"></p>
+    <div class="karte-kopf"><h2>${esc(m.name)}</h2><p class="muted">${esc(m.sub)}</p></div>
+    <fieldset class="wahl"><legend>Status</legend>${wahl}</fieldset>
+    <div class="zeit">
+      <label class="feld">Bis wann<input type="date" data-feld="datum" value="${esc(teile ? teile[1] : "")}"></label>
+      <label class="feld">Uhrzeit<input type="time" data-feld="zeit" value="${esc(teile ? teile[2] : "")}"></label>
+    </div>
+    <p class="meldung" aria-live="polite"></p>
   </article>`;
+}
+
+function sortiert(liste) {
+  return liste.sort((a, b) => (a.reihenfolge ?? 99) - (b.reihenfolge ?? 99) || String(a.name).localeCompare(b.name, "de"));
 }
 
 /* Daten live aus Firebase; während eine Eingabe läuft, wird nicht neu gezeichnet */
 let fokus = false;
 let ausstehend = null;
 function zeichne(v) {
-  const liste = Object.entries(v)
-    .map(([key, m]) => ({ key, ...m }))
-    .sort((a, b) => (a.reihenfolge ?? 99) - (b.reihenfolge ?? 99) || String(a.name).localeCompare(b.name, "de"));
+  const liste = sortiert(Object.entries(v).map(([key, m]) => ({ key, ...m })));
   $("startliste").hidden = liste.length > 0;
   $("liste").innerHTML = liste.map(karte).join("");
 }
@@ -237,7 +246,7 @@ liste.addEventListener("focusout", (e) => {
   if (ausstehend) { const v = ausstehend; ausstehend = null; zeichne(v); }
 });
 
-/* Speichern: jede Änderung geht direkt in die Datenbank */
+/* Speichern: jede Änderung geht direkt in die Datenbank. Jede Änderung schreibt nur ihr eigenes Feld. */
 async function speichere(key, werte, meldung) {
   meldung.classList.remove("fehler");
   meldung.textContent = "Speichere …";
@@ -254,11 +263,24 @@ async function speichere(key, werte, meldung) {
 liste.addEventListener("change", (e) => {
   const kartenEl = e.target.closest(".karte");
   if (!kartenEl) return;
-  const status = kartenEl.querySelector('input[type="radio"]:checked')?.value || null;
-  const datum = kartenEl.querySelector('input[data-feld="bisDatum"]'); const aufbau = kartenEl.querySelector('input[data-feld="aufbauAb"]');
-  datum.disabled = status !== "draussen"; aufbau.disabled = status !== "drinnen";
-  const bisDatum = status === "draussen" && datum.value ? datum.value : null; const aufbauAb = status === "drinnen" && aufbau.value ? aufbau.value : null;
-  speichere(kartenEl.dataset.key, { status, bisDatum, aufbauAb }, kartenEl.querySelector(".meldung"));
+  const key = kartenEl.dataset.key;
+  const meldung = kartenEl.querySelector(".meldung");
+  if (e.target.matches('input[type="radio"]')) {
+    speichere(key, { status: e.target.value }, meldung);
+    return;
+  }
+  const datum = kartenEl.querySelector('input[data-feld="datum"]').value;
+  const zeit = kartenEl.querySelector('input[data-feld="zeit"]').value.slice(0, 5);
+  if (!datum && !zeit) {
+    speichere(key, { bis: null }, meldung);
+    return;
+  }
+  if (!datum || !zeit) {
+    meldung.classList.add("fehler");
+    meldung.textContent = "Bitte Datum und Uhrzeit eintragen.";
+    return;
+  }
+  speichere(key, { bis: `${datum}T${zeit}` }, meldung);
 });
 
 /* Startliste anlegen (nur wenn die Liste leer ist) */

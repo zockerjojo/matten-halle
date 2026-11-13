@@ -1,8 +1,8 @@
-# Matten-Übersicht Helmut Körchnig Halle
+# Matten-Übersicht Helmut-Körnig-Halle
 
 Zwei Seiten, die über Firebase live verbunden sind:
 
-- `index.html`: öffentliche Anzeige für Sportler, nur lesen
+- `index.html`: öffentliche Anzeige für Sportler, nur lesen. Eine Tabelle mit Status und Zeit, ohne Scrollen auf dem Handy.
 - `admin.html`: Bereich für die Hallenwärter, nur mit Zugangscode
 
 Jede Änderung im Hallenwärter-Bereich erscheint sofort auf der öffentlichen Anzeige.
@@ -14,7 +14,7 @@ Jede Änderung im Hallenwärter-Bereich erscheint sofort auf der öffentlichen A
 3. In der Datenbank den Zugangscode unter `zugang/code` eintragen. Den Code nicht in dieses Repository schreiben, es ist öffentlich.
 4. Unter „Regeln“ den Inhalt von `database.rules.json` einfügen und veröffentlichen.
 5. Die Werte aus der Firebase-Konsole in `js/config.js` eintragen.
-6. `admin.html` öffnen, den Code eingeben und einmal „Startliste anlegen“ drücken.
+6. `admin.html` öffnen, den Code eingeben und einmal „Startliste anlegen“ drücken. Die fünf Einträge starten ohne Status. Bis das Hallenteam sie einträgt, erscheinen sie rot.
 
 ## Zugangscode ändern
 
@@ -24,10 +24,11 @@ Den neuen Code unter `zugang/code` eintragen. Alle bisherigen Anmeldungen werden
 
 `matten/<id>` mit diesen Feldern:
 
-- `name`: Anzeigename
-- `status`: `draussen`, `drinnen` oder fehlt (keine Angabe)
-- `bisDatum`: bis wann die Matte draußen bleibt, Format `JJJJ-MM-TT`
-- `aufbauAb`: ab wann die Matte wieder aufgebaut wird (nur bei `drinnen`), Format `JJJJ-MM-TT`
+- `name`: Anzeigename, z. B. „Stabhochsprunganlage“
+- `sub`: Zusatz unter dem Namen, z. B. „Benz · Gelb“
+- `art`: `anlage` oder `tribuene`
+- `status`: bei `anlage` entweder `aufgebaut` (grün) oder `abgebaut` (rot), bei `tribuene` entweder `eingefahren` (grün) oder `ausgefahren` (rot). Fehlt der Status, erscheint der Eintrag rot.
+- `bis`: bis wann, Format `JJJJ-MM-TThh:mm`, z. B. `2026-12-14T18:00`. Fehlt die Zeit, steht „Zeit folgt“.
 - `reihenfolge`: Sortierung auf der Anzeige
 - `geaendert`: Zeitpunkt der letzten Änderung
 
