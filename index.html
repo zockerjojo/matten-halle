@@ -3,96 +3,78 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Matten-Übersicht Helmut Körchnig Halle</title>
+<title>Status Sportanlagen · Helmut-Körnig-Halle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#E9EDEA; --panel:#F7F9F7; --ink:#14201B; --ink-2:#55635C; --line:#C3CCC6;
-  --accent:#17694B; --on-accent:#FFFFFF; --mute:#C3CCC6; --mute-ink:#14201B;
+  --bg:#E9EDEA; --panel:#F7F9F7; --ink:#14201B; --ink2:#55635C; --line:#C3CCC6;
+  --gruen:#1B7F3B; --rot:#B3261E; --weiss:#FFFFFF;
   --display:"Barlow Condensed","Arial Narrow",sans-serif;
   --body:Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --bg:#0F1512; --panel:#18211C; --ink:#E7EEE9; --ink-2:#9BAAA1; --line:#33413A;
-  --accent:#4CC38A; --on-accent:#06150E; --mute:#33413A; --mute-ink:#E7EEE9;
+  --bg:#0F1512; --panel:#18211C; --ink:#E7EEE9; --ink2:#9BAAA1; --line:#33413A;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 [hidden]{display:none !important}
-body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.4}
-.wrap{max-width:1200px; margin:0 auto; padding:0 20px 40px}
-.kopf{display:flex; justify-content:space-between; align-items:center; gap:12px 16px; flex-wrap:wrap; padding-top:24px}
-.marke{font-family:var(--display); font-weight:600; font-size:26px; line-height:1; letter-spacing:.04em; text-transform:uppercase}
-.werkzeuge{display:flex; align-items:center; gap:12px 16px; flex-wrap:wrap}
-.stand{font-size:15px; color:var(--ink-2); font-variant-numeric:tabular-nums}
-.knopf{font:inherit; font-size:15px; font-weight:600; min-height:44px; padding:8px 18px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer}
-.knopf[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
-button:focus-visible, a:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
-.einstieg{display:flex; flex-direction:column; gap:16px; padding:56px 0 40px}
-h1{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(40px, 6vw, 64px); line-height:1; text-transform:uppercase; text-wrap:balance}
-.lead{margin:0; max-width:640px; font-size:clamp(17px, 2vw, 20px); color:var(--ink-2)}
-.chips{display:flex; gap:10px; flex-wrap:wrap; padding-top:8px}
-.chip{font-size:15px; font-weight:600; padding:7px 14px; border-radius:999px; background:var(--mute); color:var(--mute-ink)}
-.chip.akzent{background:var(--accent); color:var(--on-accent)}
-.block{display:flex; flex-direction:column; gap:24px; padding-bottom:48px}
-.kopfzeile{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; border-bottom:2px solid var(--ink); padding-bottom:10px}
-h2{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(30px, 4vw, 40px); line-height:1; text-transform:uppercase}
-.muted{margin:0; font-size:15px; color:var(--ink-2)}
-.raster{display:grid; grid-template-columns:minmax(0,1fr); gap:24px}
-@media (min-width:700px){ .raster.klein{grid-template-columns:repeat(2, minmax(0,1fr))} }
-@media (min-width:1000px){ .raster.klein{grid-template-columns:repeat(3, minmax(0,1fr))} }
-.karte{background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; display:flex; flex-direction:column}
-.karte svg{display:block; width:100%; height:auto}
-.karte.gross{display:grid; grid-template-columns:minmax(0,1fr)}
-@media (min-width:800px){ .karte.gross{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)} }
-.info{display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:10px; padding:20px; min-width:0}
-.karte.gross .info{padding:28px 32px; gap:12px}
-.pill{font-size:14px; font-weight:600; padding:5px 11px; border-radius:999px; background:var(--mute); color:var(--mute-ink)}
-.pill.akzent{background:var(--accent); color:var(--on-accent)}
-h3{margin:0; font-family:var(--display); font-weight:600; font-size:32px; line-height:1.05; text-transform:uppercase; text-wrap:balance; overflow-wrap:anywhere}
-.karte.gross h3{font-size:clamp(36px, 5vw, 48px)}
-.datum{margin:0; font-size:20px; font-weight:600}
-.karte.gross .datum{font-size:24px}
-.fuss{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; border-top:1px solid var(--line); padding:24px 0 0; font-size:15px; color:var(--ink-2)}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.35}
+.seite{min-height:100vh; min-height:100dvh; max-width:640px; margin:0 auto; padding:18px 16px 14px; display:flex; flex-direction:column; gap:14px}
+.kopf{display:flex; flex-direction:column; gap:6px}
+.kopfzeile{display:flex; justify-content:space-between; align-items:center; gap:12px}
+.marke{margin:0; font-size:13px; font-weight:500; letter-spacing:.04em; text-transform:uppercase; color:var(--ink2)}
+h1{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(32px, 8vw, 44px); line-height:1; text-transform:uppercase; text-wrap:balance}
+.knopf{font:inherit; font-size:14px; font-weight:600; min-height:44px; padding:6px 14px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; white-space:nowrap}
+.knopf[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:var(--bg)}
+button:focus-visible{outline:3px solid var(--ink); outline-offset:2px}
+.nur-leser{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+table{width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed; background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden}
+thead th{padding:8px 12px; border-bottom:2px solid var(--ink); text-align:left; font-size:13px; font-weight:600; color:var(--ink2)}
+tbody th, tbody td{padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:middle}
+tbody tr:last-child th, tbody tr:last-child td{border-bottom:0}
+tbody th{font-weight:400}
+.anlage{display:block; font-family:var(--display); font-weight:600; font-size:19px; line-height:1.05}
+.sub{display:block; margin-top:2px; font-size:13px; font-weight:400; color:var(--ink2)}
+.pille{display:inline-block; padding:3px 9px; border-radius:999px; color:var(--weiss); font-size:14px; font-weight:600; white-space:nowrap}
+.pille.gruen{background:var(--gruen)}
+.pille.rot{background:var(--rot)}
+.bis{display:block; margin-top:4px; font-size:13px; color:var(--ink2)}
+.leer{color:var(--ink2); font-size:15px}
+.verbindung{margin:0; font-size:13px; font-weight:600; color:var(--ink)}
+.fuss{margin-top:auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:2px 12px; font-size:13px; color:var(--ink2)}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="seite">
 
 <header class="kopf">
-  <div class="marke">Helmut Körchnig Halle</div>
-  <div class="werkzeuge">
-    <span class="stand" id="stand"></span>
+  <div class="kopfzeile">
+    <p class="marke">Helmut-Körnig-Halle</p>
     <button class="knopf" id="dunkel" type="button" aria-pressed="false">Dunkelmodus</button>
   </div>
+  <h1>Status Sportanlagen</h1>
 </header>
 
-<div class="einstieg">
-  <h1>Welche Matten sind gerade aufgebaut?</h1>
-  <p class="lead">Hier siehst du, welche Matten und Anlagen gerade stehen und bis wann sie bleiben.</p>
-  <div class="chips">
-    <span class="chip akzent" id="chip-draussen">0 aufgebaut</span>
-    <span class="chip" id="chip-weitere">0 weitere Anlagen</span>
-  </div>
-</div>
+<table>
+  <caption class="nur-leser">Status der Sportanlagen</caption>
+  <colgroup><col style="width:58%"><col style="width:42%"></colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Anlage</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody id="zeilen"></tbody>
+</table>
 
-<section class="block">
-  <div class="kopfzeile"><h2>Aufgebaut</h2><span class="muted" id="zaehl-draussen"></span></div>
-  <div class="raster" id="liste-draussen"></div>
-  <p class="muted" id="leer-draussen" hidden>Gerade ist keine Matte aufgebaut.</p>
-</section>
-
-<section class="block">
-  <div class="kopfzeile"><h2>Weitere Anlagen</h2><span class="muted" id="zaehl-weitere"></span></div>
-  <div class="raster klein" id="liste-weitere"></div>
-</section>
+<p class="verbindung" id="verbindung" hidden>Keine Verbindung. Die Angaben können veraltet sein.</p>
 
 <footer class="fuss">
-  <span id="verbindung">Verbinde …</span>
-  <span>Aktualisiert vom Hallenteam</span>
+  <span>Zeiten sind voraussichtlich</span>
+  <span id="stand">Stand: –</span>
 </footer>
 
 </div>
@@ -105,7 +87,7 @@ import { firebaseConfig } from "./js/config.js";
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
-/* Design: Dunkelmodus merken */
+/* Dunkelmodus merken */
 const wurzel = document.documentElement;
 function thema(dunkel) {
   wurzel.dataset.theme = dunkel ? "dark" : "light";
@@ -117,109 +99,64 @@ try { gemerkt = localStorage.getItem("matten-thema"); } catch (e) {}
 thema(gemerkt ? gemerkt === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches);
 $("dunkel").addEventListener("click", () => thema(wurzel.dataset.theme !== "dark"));
 
-/* Platzhalterbilder: Matten in ihrer Farbe */
-const STAB = `<svg viewBox="0 0 640 380" aria-hidden="true" focusable="false">
-  <rect width="640" height="380" fill="#DCE3DE"/>
-  <rect width="640" height="150" fill="#E9EDEA"/>
-  <path d="M0 150 H640" stroke="#C3CCC6" stroke-width="2" fill="none"/>
-  <polygon points="110,250 530,250 600,360 40,360" fill="#17694B"/>
-  <path d="M190 250 L150 360 M290 250 L260 360 M390 250 L370 360 M490 250 L480 360" stroke="#0E4A33" stroke-width="2" fill="none"/>
-  <rect x="420" y="96" width="8" height="158" fill="#14201B"/>
-  <rect x="512" y="96" width="8" height="158" fill="#14201B"/>
-  <line x1="424" y1="130" x2="516" y2="130" stroke="#14201B" stroke-width="5"/>
-  <line x1="160" y1="330" x2="452" y2="92" stroke="#F29F05" stroke-width="7" stroke-linecap="round"/>
-</svg>`;
-
-function hoch(mat, naht, niedrig = false) {
-  const stander = niedrig
-    ? `<rect x="226" y="150" width="8" height="90" fill="#14201B"/>
-  <rect x="406" y="150" width="8" height="90" fill="#14201B"/>
-  <line x1="230" y1="168" x2="410" y2="168" stroke="#55635C" stroke-width="6"/>`
-    : `<rect x="196" y="92" width="8" height="150" fill="#14201B"/>
-  <rect x="436" y="92" width="8" height="150" fill="#14201B"/>
-  <line x1="200" y1="124" x2="440" y2="124" stroke="#55635C" stroke-width="6"/>`;
-  return `<svg viewBox="0 0 640 380" aria-hidden="true" focusable="false">
-  <rect width="640" height="380" fill="#DCE3DE"/>
-  <rect width="640" height="150" fill="#E9EDEA"/>
-  <path d="M0 150 H640" stroke="#C3CCC6" stroke-width="2" fill="none"/>
-  <polygon points="150,240 490,240 560,350 80,350" fill="${mat}"/>
-  <path d="M250 240 L220 350 M350 240 L340 350 M430 240 L440 350" stroke="${naht}" stroke-width="2" fill="none"/>
-  ${stander}
-</svg>`;
-}
-
-const BILDER = {
-  "stabhochsprung": STAB,
-  "gruene-schueler-hochsprunganlage": hoch("#4FA66E", "#378A59", true),
-  "gelbe-hochsprunganlage": hoch("#F2C230", "#D9A81A"),
-  "gruene-hochsprunganlage": hoch("#17694B", "#0E4A33"),
+/* Zustände: grün = frei, rot = nicht frei. Ohne Status gilt rot. */
+const ZUSTAENDE = {
+  anlage: { aufgebaut: ["Aufgebaut", true], abgebaut: ["Abgebaut", false] },
+  tribuene: { eingefahren: ["Eingefahren", true], ausgefahren: ["Ausgefahren", false] },
 };
-const bild = (key) => BILDER[key] ?? hoch("#9AA8A0", "#7C8C84");
+const OHNE_STATUS = { anlage: "abgebaut", tribuene: "ausgefahren" };
+const BIS = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
 
-/* Datum und Restzeit */
-function datumText(iso) {
-  const [j, m, t] = iso.split("-").map(Number);
-  return new Date(j, m - 1, t).toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });
-}
-function tageText(iso) {
-  const [j, m, t] = iso.split("-").map(Number);
-  const ziel = new Date(j, m - 1, t);
-  const heute = new Date();
-  heute.setHours(0, 0, 0, 0);
-  const tage = Math.round((ziel - heute) / 86400000);
-  if (tage < 0) return "Zeitraum abgelaufen";
-  if (tage === 0) return "Heute ist der letzte Tag";
-  if (tage === 1) return "Noch 1 Tag";
-  return `Noch ${tage} Tage`;
-}
-function standText() {
-  const jetzt = new Date();
-  const tag = jetzt.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
-  const zeit = jetzt.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-  return `Stand: ${tag}, ${zeit} Uhr`;
+function zustand(m) {
+  const art = m.art === "tribuene" ? "tribuene" : "anlage";
+  const tabelle = ZUSTAENDE[art];
+  const gesetzt = Object.prototype.hasOwnProperty.call(tabelle, m.status);
+  const [text, gruen] = tabelle[gesetzt ? m.status : OHNE_STATUS[art]];
+  return { text, gruen, gesetzt };
 }
 
-/* Karten */
-function karteGross(m) {
-  const frist = m.bisDatum ? `Bis ${datumText(m.bisDatum)}` : "";
-  const rest = m.bisDatum ? tageText(m.bisDatum) : "";
-  return `<article class="karte gross">${bild(m.key)}<div class="info"><span class="pill akzent">Aufgebaut</span><h3>${esc(m.name)}</h3>${frist ? `<p class="datum">${esc(frist)}</p><p class="muted">${esc(rest)}</p>` : ""}</div></article>`;
-}
-function karteKlein(m) {
-  const wieder = m.status === "drinnen" && m.aufbauAb ? `<p class="muted">Wieder aufgebaut ab ${esc(datumText(m.aufbauAb))}</p>` : ""; const status = m.status === "drinnen" ? "Eingeräumt" : "Keine Angabe";
-  return `<article class="karte">${bild(m.key)}<div class="info"><span class="pill">${status}</span><h3>${esc(m.name)}</h3>${wieder}</div></article>`;
+/* Bis-Zeit: "2026-12-14T18:00" wird zu "bis 14.12., 18:00" */
+function bisText(bis) {
+  const t = BIS.exec(bis ?? "");
+  return t ? `bis ${t[3]}.${t[2]}., ${t[4]}:${t[5]}` : "";
 }
 
-/* Daten: live aus Firebase */
-let daten = {};
+function zeile(m) {
+  const z = zustand(m);
+  const frist = bisText(m.bis) || (z.gesetzt ? "Zeit folgt" : "");
+  return `<tr>
+    <th scope="row"><span class="anlage">${esc(m.name)}</span><span class="sub">${esc(m.sub)}</span></th>
+    <td><span class="pille ${z.gruen ? "gruen" : "rot"}">${esc(z.text)}</span>${frist ? `<span class="bis">${esc(frist)}</span>` : ""}</td>
+  </tr>`;
+}
+
 function sortiert(liste) {
   return liste.sort((a, b) => (a.reihenfolge ?? 99) - (b.reihenfolge ?? 99) || String(a.name).localeCompare(b.name, "de"));
 }
-function zeichne() {
-  const liste = sortiert(Object.entries(daten).map(([key, m]) => ({ key, ...m })));
-  const draussen = liste.filter((m) => m.status === "draussen");
-  const weitere = liste.filter((m) => m.status !== "draussen");
-  $("chip-draussen").textContent = `${draussen.length} aufgebaut`;
-  $("chip-weitere").textContent = `${weitere.length} weitere Anlagen`;
-  $("zaehl-draussen").textContent = `${draussen.length} ${draussen.length === 1 ? "Matte" : "Matten"}`;
-  $("zaehl-weitere").textContent = `${weitere.length} ${weitere.length === 1 ? "Anlage" : "Anlagen"}`;
-  $("leer-draussen").hidden = draussen.length > 0;
-  $("liste-draussen").innerHTML = draussen.map(karteGross).join("");
-  $("liste-weitere").innerHTML = weitere.map(karteKlein).join("");
-  $("stand").textContent = standText();
+
+/* Stand = Zeitpunkt der letzten Änderung */
+function standText(ms) {
+  const d = new Date(ms);
+  const tag = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.`;
+  const zeit = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  return `Stand: ${tag}, ${zeit} Uhr`;
 }
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 onValue(ref(db, "matten"), (snap) => {
-  daten = snap.val() ?? {};
-  zeichne();
+  const v = snap.val() ?? {};
+  const liste = sortiert(Object.entries(v).map(([key, m]) => ({ key, ...m })));
+  $("zeilen").innerHTML = liste.length
+    ? liste.map(zeile).join("")
+    : `<tr><td colspan="2" class="leer">Noch keine Anlagen eingetragen.</td></tr>`;
+  const letzte = liste.reduce((max, m) => Math.max(max, Number(m.geaendert) || 0), 0);
+  $("stand").textContent = letzte ? standText(letzte) : "Stand: –";
 });
 onValue(ref(db, ".info/connected"), (snap) => {
-  $("verbindung").textContent = snap.val() ? "Live verbunden" : "Keine Verbindung, die Anzeige kann veraltet sein";
+  $("verbindung").hidden = snap.val() === true;
 });
-setInterval(zeichne, 60000);
 </script>
 </body>
 </html>
