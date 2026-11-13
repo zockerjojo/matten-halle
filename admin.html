@@ -32,6 +32,12 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); 
 .knopf{font:inherit; font-size:15px; font-weight:600; min-height:44px; padding:8px 18px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer}
 .knopf.primaer{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
 .knopf[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.thema-knopf{display:inline-flex; align-items:center; justify-content:center; flex:none; width:44px; height:44px; padding:0; border-radius:50%; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer}
+.thema-knopf:hover{border-color:var(--ink)}
+.thema-knopf svg{width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.thema-knopf .sonne{display:none}
+:root[data-theme="dark"] .thema-knopf .sonne{display:block}
+:root[data-theme="dark"] .thema-knopf .mond{display:none}
 button:focus-visible, input:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 h1{margin:0; font-family:var(--display); font-weight:600; font-size:clamp(36px, 6vw, 52px); line-height:1; text-transform:uppercase; text-wrap:balance}
 .muted{margin:0; font-size:15px; color:var(--ink-2)}
@@ -61,7 +67,7 @@ legend{font-size:14px; color:var(--ink-2); padding:0 0 6px}
   <div class="marke">Hallenwärter · Matten</div>
   <div class="werkzeuge">
     <span class="wer" id="wer"></span>
-    <button class="knopf" id="dunkel" type="button" aria-pressed="false">Dunkelmodus</button>
+    <button class="thema-knopf" id="dunkel" type="button" aria-pressed="false" aria-label="Dunkelmodus" title="Dunkelmodus"><svg class="mond" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="sonne" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
     <button class="knopf" id="abmelden" type="button" hidden>Abmelden</button>
   </div>
 </header>
