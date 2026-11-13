@@ -3,18 +3,23 @@
     "matten": {
       ".read": true,
       "$matteId": {
-        ".write": "root.child('admins').child(auth.uid).exists()",
+        ".write": "root.child('admins').child(auth.uid).exists() && root.child('admins').child(auth.uid).val() == root.child('zugang').child('code').val()",
         "name": { ".validate": "newData.isString() && newData.val().length < 120" },
         "status": { ".validate": "newData.val() == 'draussen' || newData.val() == 'drinnen'" },
         "bisDatum": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)" },
-        "aufbauAb": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)" }, "reihenfolge": { ".validate": "newData.isNumber()" },
+        "aufbauAb": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)" },
+        "reihenfolge": { ".validate": "newData.isNumber()" },
         "geaendert": { ".validate": "newData.isNumber()" },
         "$anderes": { ".validate": false }
       }
     },
     "admins": {
       ".read": false,
-      ".write": false
+      ".write": false,
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && newData.isString() && newData.val() == root.child('zugang').child('code').val()"
+      }
     }
   }
 }
