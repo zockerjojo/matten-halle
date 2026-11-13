@@ -69,13 +69,10 @@ code{font-size:13px; overflow-wrap:anywhere}
 <section id="anmeldung" class="anmeldung">
   <h1>Anmelden</h1>
   <form id="formular" class="stapel" novalidate>
-    <label class="feld">E-Mail
-      <input id="email" type="email" autocomplete="username" required>
+    <label class="feld">Zugangscode
+      <input id="code" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required>
     </label>
-    <label class="feld">Passwort
-      <input id="passwort" type="password" autocomplete="current-password" required>
-    </label>
-    <button class="knopf primaer" type="submit">Anmelden</button>
+    <button class="knopf primaer" id="anmelden-knopf" type="submit">Anmelden</button>
     <p class="meldung fehler" id="anmeldung-fehler" role="alert"></p>
   </form>
 </section>
@@ -88,15 +85,14 @@ code{font-size:13px; overflow-wrap:anywhere}
     <span class="meldung" id="startliste-meldung" aria-live="polite"></span>
   </div>
   <div class="liste" id="liste"></div>
-  <p class="muted">Deine Benutzer-ID (für die Freischaltung): <code id="uid"></code></p>
 </section>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, onValue, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, onAuthStateChanged, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, get, set, onValue, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { firebaseConfig } from "./js/config.js";
 
 const $ = (id) => document.getElementById(id);
@@ -126,42 +122,78 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-function fehlerText(code) {
-  switch (code) {
-    case "auth/invalid-credential":
-    case "auth/wrong-password":
-    case "auth/user-not-found":
-      return "E-Mail oder Passwort stimmen nicht.";
-    case "auth/invalid-email":
-      return "Bitte eine gültige E-Mail-Adresse eingeben.";
-    case "auth/too-many-requests":
-      return "Zu viele Versuche. Bitte warte einen Moment.";
+const istRechteFehler = (err) => /PERMISSION_DENIED/.test(`${err?.code ?? ""} ${err?.message ?? ""}`);
+
+function anmeldeFehler(err) {
+  if (istRechteFehler(err)) return "Der Code stimmt nicht.";
+  switch (err?.code) {
     case "auth/network-request-failed":
       return "Keine Verbindung zum Server.";
+    case "auth/too-many-requests":
+      return "Zu viele Versuche. Bitte warte einen Moment.";
     default:
-      return "Anmeldung hat nicht geklappt.";
+      return "Anmeldung hat nicht geklappt. Bitte noch einmal versuchen.";
   }
 }
 
-/* Anmeldung */
-onAuthStateChanged(auth, (user) => {
-  $("anmeldung").hidden = !!user;
-  $("panel").hidden = !user;
-  $("abmelden").hidden = !user;
-  $("wer").textContent = user ? user.email : "";
-  $("uid").textContent = user ? user.uid : "";
+/* Anmeldung: Die Seite meldet sich anonym an. Die Datenbank prüft den Code, wenn der Eintrag gespeichert wird. */
+let anmeldungLaeuft = false;
+function zeigeBereich(angemeldet) {
+  $("anmeldung").hidden = angemeldet;
+  $("panel").hidden = !angemeldet;
+  $("abmelden").hidden = !angemeldet;
+  $("wer").textContent = angemeldet ? "Angemeldet" : "";
+}
+async function istFreigeschaltet(uid) {
+  const snap = await get(ref(db, `admins/${uid}`));
+  return snap.exists();
+}
+onAuthStateChanged(auth, async (user) => {
+  if (anmeldungLaeuft) return;
+  let freigeschaltet = false;
+  try {
+    freigeschaltet = !!user && (await istFreigeschaltet(user.uid));
+  } catch (err) {
+    console.error(err);
+  }
+  zeigeBereich(freigeschaltet);
 });
 $("formular").addEventListener("submit", async (e) => {
   e.preventDefault();
-  $("anmeldung-fehler").textContent = "";
+  const feld = $("code");
+  const knopf = $("anmelden-knopf");
+  const fehler = $("anmeldung-fehler");
+  const code = feld.value.trim();
+  fehler.textContent = "";
+  if (!code) {
+    fehler.textContent = "Bitte den Zugangscode eingeben.";
+    return;
+  }
+  anmeldungLaeuft = true;
+  knopf.disabled = true;
   try {
-    await signInWithEmailAndPassword(auth, $("email").value.trim(), $("passwort").value);
-    $("passwort").value = "";
+    const { user } = await signInAnonymously(auth);
+    await set(ref(db, `admins/${user.uid}`), code);
+    feld.value = "";
+    zeigeBereich(true);
   } catch (err) {
-    $("anmeldung-fehler").textContent = fehlerText(err.code);
+    console.error(err);
+    fehler.textContent = anmeldeFehler(err);
+    await signOut(auth).catch(() => {});
+  } finally {
+    anmeldungLaeuft = false;
+    knopf.disabled = false;
   }
 });
 $("abmelden").addEventListener("click", () => signOut(auth));
+
+/* Lehnt die Datenbank den Zugang ab (z. B. weil der Code geändert wurde), wird abgemeldet */
+async function zugangAbgelaufen(err) {
+  if (!istRechteFehler(err)) return false;
+  $("anmeldung-fehler").textContent = "Dein Zugang ist nicht mehr gültig. Bitte den Code neu eingeben.";
+  await signOut(auth).catch(() => {});
+  return true;
+}
 
 /* Karten */
 function karte(m) {
@@ -214,11 +246,9 @@ async function speichere(key, werte, meldung) {
     meldung.textContent = "Gespeichert. Die Anzeige ist aktualisiert.";
   } catch (err) {
     console.error(err);
-    const rechte = /PERMISSION_DENIED/.test(`${err?.code ?? ""} ${err?.message ?? ""}`);
+    if (await zugangAbgelaufen(err)) { meldung.textContent = ""; return; }
     meldung.classList.add("fehler");
-    meldung.textContent = rechte
-      ? "Keine Berechtigung. Bitte die Benutzer-ID freischalten lassen."
-      : "Speichern hat nicht geklappt. Bitte noch einmal versuchen.";
+    meldung.textContent = "Speichern hat nicht geklappt. Bitte noch einmal versuchen.";
   }
 }
 liste.addEventListener("change", (e) => {
@@ -242,6 +272,7 @@ $("startliste").addEventListener("click", async () => {
     meldung.textContent = "Startliste ist angelegt.";
   } catch (err) {
     console.error(err);
+    if (await zugangAbgelaufen(err)) { meldung.textContent = ""; return; }
     meldung.textContent = "Das hat nicht geklappt. Bitte noch einmal versuchen.";
   }
 });
