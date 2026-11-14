@@ -53,6 +53,16 @@ tbody th{font-weight:400}
 .leer{color:var(--ink2); font-size:15px}
 .verbindung{margin:0; font-size:13px; font-weight:600; color:var(--ink)}
 .fuss{margin-top:auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:2px 12px; font-size:13px; color:var(--ink2)}
+/* Auf schmalen Bildschirmen steht der Name über dem Status, damit er nicht mitten im Wort umbricht */
+@media (max-width:599px){
+  table, tbody{display:block}
+  colgroup{display:none}
+  thead{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+  tbody tr{display:block; padding:12px 14px 14px; border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:0}
+  tbody th, tbody td{display:block; border:0; padding:0}
+  tbody th{padding-bottom:8px}
+}
 </style>
 </head>
 <body>
@@ -118,7 +128,7 @@ const VERBEN = {
   tribuene: { aus: "rausgefahren", ein: "reingefahren" },
 };
 const WOCHENTAGE = ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."];
-const ZEITPUNKT = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
+const ZEITPUNKT = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/;
 const artVon = (m) => (m.art === "tribuene" ? "tribuene" : "anlage");
 
 function zustand(m) {
@@ -129,13 +139,14 @@ function zustand(m) {
   return { text, gruen, gesetzt };
 }
 
-/* "2026-11-16T08:00" wird zu "Wird voraussichtlich am Mo., 16.11. um 08:00 Uhr abgebaut." */
+/* "2026-11-16T08:00" wird zu "Wird voraussichtlich am Mo., 16.11. um 08:00 Uhr abgebaut.", "2026-11-16" zu "Wird voraussichtlich am Mo., 16.11. abgebaut." */
 function satz(zeit, verb) {
   const t = ZEITPUNKT.exec(zeit ?? "");
   if (!t) return "";
   const [, jahr, monat, tag, std, min] = t;
   const wochentag = WOCHENTAGE[new Date(Date.UTC(+jahr, +monat - 1, +tag)).getUTCDay()];
-  return `Wird voraussichtlich am ${wochentag}, ${tag}.${monat}. um ${std}:${min} Uhr ${verb}.`;
+  const uhrzeit = std ? ` um ${std}:${min} Uhr` : "";
+  return `Wird voraussichtlich am ${wochentag}, ${tag}.${monat}.${uhrzeit} ${verb}.`;
 }
 
 /* Zuerst der nächste Wechsel: bei grün das Abbauen bzw. Ausfahren, bei rot das Aufbauen bzw. Einfahren */

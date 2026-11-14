@@ -202,7 +202,7 @@ async function zugangAbgelaufen(err) {
   return true;
 }
 
-/* Karten: Status je Art, darunter zwei Termine. Ein Termin wird erst gespeichert, wenn Datum und Uhrzeit ausgefüllt sind. */
+/* Karten: Status je Art, darunter zwei Termine. Ein Termin braucht ein Datum, die Uhrzeit ist optional. */
 const OPTIONEN = {
   anlage: [["aufgebaut", "Aufgebaut (grüne Anzeige)"], ["abgebaut", "Abgebaut (rote Anzeige)"]],
   tribuene: [["eingefahren", "Eingefahren (grüne Anzeige)"], ["ausgefahren", "Ausgefahren (rote Anzeige)"]],
@@ -211,7 +211,7 @@ const TERMINE = {
   anlage: { aus: "Wird abgebaut am", ein: "Wird wieder aufgebaut am" },
   tribuene: { aus: "Wird rausgefahren am", ein: "Wird reingefahren am" },
 };
-const ZEIT_TEILE = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})$/;
+const ZEIT_TEILE = /^(\d{4}-\d{2}-\d{2})(?:T(\d{2}:\d{2}))?$/;
 
 function termin(m, art, paar) {
   const teile = ZEIT_TEILE.exec(m[paar] ?? "");
@@ -219,7 +219,7 @@ function termin(m, art, paar) {
       <legend>${TERMINE[art][paar]}</legend>
       <div class="zeit">
         <label class="feld">Datum<input type="date" data-paar="${paar}" data-feld="datum" value="${esc(teile ? teile[1] : "")}"></label>
-        <label class="feld">Uhrzeit<input type="time" data-paar="${paar}" data-feld="zeit" value="${esc(teile ? teile[2] : "")}"></label>
+        <label class="feld">Uhrzeit (optional)<input type="time" data-paar="${paar}" data-feld="zeit" value="${esc(teile ? teile[2] : "")}"></label>
       </div>
     </fieldset>`;
 }
@@ -295,12 +295,12 @@ liste.addEventListener("change", (e) => {
     speichere(key, { [paar]: null }, meldung);
     return;
   }
-  if (!datum || !zeit) {
+  if (!datum) {
     meldung.classList.add("fehler");
-    meldung.textContent = "Bitte Datum und Uhrzeit eintragen.";
+    meldung.textContent = "Bitte ein Datum eintragen.";
     return;
   }
-  speichere(key, { [paar]: `${datum}T${zeit}` }, meldung);
+  speichere(key, { [paar]: zeit ? `${datum}T${zeit}` : datum }, meldung);
 });
 
 /* Startliste anlegen (nur wenn die Liste leer ist) */
