@@ -52,7 +52,6 @@ tbody th{font-weight:400}
 .kasten.rot{background:var(--rot)}
 .leer{color:var(--ink2); font-size:15px}
 .verbindung{margin:0; font-size:13px; font-weight:600; color:var(--ink)}
-.fuss{margin-top:auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:2px 12px; font-size:13px; color:var(--ink2)}
 /* Auf schmalen Bildschirmen steht der Name über dem Status, damit er nicht mitten im Wort umbricht */
 @media (max-width:599px){
   table, tbody{display:block}
@@ -90,10 +89,6 @@ tbody th{font-weight:400}
 
 <p class="verbindung" id="verbindung" hidden>Keine Verbindung. Die Angaben können veraltet sein.</p>
 
-<footer class="fuss">
-  <span id="stand">Stand: –</span>
-</footer>
-
 </div>
 
 <script type="module">
@@ -125,7 +120,7 @@ const OHNE_STATUS = { anlage: "abgebaut", tribuene: "ausgefahren" };
 /* Wörter für die Sätze: "aus" = Abbau bzw. Ausfahren, "ein" = Wiederaufbau bzw. Einfahren */
 const VERBEN = {
   anlage: { aus: "abgebaut", ein: "wieder aufgebaut" },
-  tribuene: { aus: "rausgefahren", ein: "reingefahren" },
+  tribuene: { aus: "ausgefahren", ein: "eingefahren" },
 };
 const WOCHENTAGE = ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."];
 const ZEITPUNKT = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/;
@@ -181,14 +176,6 @@ function sortiert(liste) {
   return liste.sort((a, b) => (a.reihenfolge ?? 99) - (b.reihenfolge ?? 99) || String(a.name).localeCompare(b.name, "de"));
 }
 
-/* Stand = Zeitpunkt der letzten Änderung */
-function standText(ms) {
-  const d = new Date(ms);
-  const tag = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.`;
-  const zeit = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-  return `Stand: ${tag}, ${zeit} Uhr`;
-}
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -198,8 +185,6 @@ onValue(ref(db, "matten"), (snap) => {
   $("zeilen").innerHTML = liste.length
     ? liste.map(zeile).join("")
     : `<tr><td colspan="2" class="leer">Noch keine Anlagen eingetragen.</td></tr>`;
-  const letzte = liste.reduce((max, m) => Math.max(max, Number(m.geaendert) || 0), 0);
-  $("stand").textContent = letzte ? standText(letzte) : "Stand: –";
 });
 onValue(ref(db, ".info/connected"), (snap) => {
   $("verbindung").hidden = snap.val() === true;
