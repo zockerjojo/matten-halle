@@ -52,6 +52,7 @@ tbody th{font-weight:400}
 .kasten.rot{background:var(--rot)}
 .leer{color:var(--ink2); font-size:15px}
 .verbindung{margin:0; font-size:13px; font-weight:600; color:var(--ink)}
+.stand{margin:0; font-size:14px; font-weight:500; color:var(--ink2)}
 /* Auf schmalen Bildschirmen steht der Name über dem Status, damit er nicht mitten im Wort umbricht */
 @media (max-width:599px){
   table, tbody{display:block}
@@ -73,6 +74,7 @@ tbody th{font-weight:400}
     <button class="thema-knopf" id="dunkel" type="button" aria-pressed="false" aria-label="Dunkelmodus" title="Dunkelmodus"><svg class="mond" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="sonne" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
   </div>
   <h1>Status Sportanlagen</h1>
+  <p class="stand" id="stand">Stand: –</p>
 </header>
 
 <table>
@@ -176,12 +178,25 @@ function sortiert(liste) {
   return liste.sort((a, b) => (a.reihenfolge ?? 99) - (b.reihenfolge ?? 99) || String(a.name).localeCompare(b.name, "de"));
 }
 
+/* "Stand" zeigt die letzte Änderung in deutscher Zeit, zum Beispiel "14.11.2026, 00:48 Uhr" */
+function standZeit(ms) {
+  const t = Object.fromEntries(
+    new Intl.DateTimeFormat("de-DE", {
+      timeZone: "Europe/Berlin", day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+    }).formatToParts(new Date(ms)).map((p) => [p.type, p.value]),
+  );
+  return `${t.day}.${t.month}.${t.year}, ${t.hour}:${t.minute} Uhr`;
+}
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 onValue(ref(db, "matten"), (snap) => {
   const v = snap.val() ?? {};
   const liste = sortiert(Object.entries(v).map(([key, m]) => ({ key, ...m })));
+  const neuste = Object.values(v).reduce((max, m) => Math.max(max, typeof m?.geaendert === "number" ? m.geaendert : 0), 0);
+  $("stand").textContent = neuste ? `Stand: ${standZeit(neuste)}` : "Stand: –";
   $("zeilen").innerHTML = liste.length
     ? liste.map(zeile).join("")
     : `<tr><td colspan="2" class="leer">Noch keine Anlagen eingetragen.</td></tr>`;
