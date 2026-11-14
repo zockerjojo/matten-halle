@@ -8,8 +8,8 @@
         "sub": { ".validate": "newData.isString() && newData.val().length < 120" },
         "art": { ".validate": "newData.val() == 'anlage' || newData.val() == 'tribuene'" },
         "status": { ".validate": "newData.val() == 'aufgebaut' || newData.val() == 'abgebaut' || newData.val() == 'eingefahren' || newData.val() == 'ausgefahren'" },
-        "aus": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$/)" },
-        "ein": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$/)" },
+        "aus": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2})?$/)" },
+        "ein": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2})?$/)" },
         "reihenfolge": { ".validate": "newData.isNumber()" },
         "geaendert": { ".validate": "newData.isNumber()" },
         "$anderes": { ".validate": false }
