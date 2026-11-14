@@ -247,7 +247,7 @@ function karte(m) {
     .map(([wert, text, farbe]) => `<label><input type="radio" name="${esc(gruppe)}" value="${wert}"${m.status === wert ? " checked" : ""}> <span>${text}</span><span class="punkt ${farbe}" aria-hidden="true"></span></label>`)
     .join("");
   return `<article class="karte" data-key="${esc(m.key)}">
-    <div class="karte-kopf"><h2>${esc(m.name)}</h2>${m.sub ? `<p class="muted">${esc(m.sub)}</p>` : ""}${art === "tribuene" ? sprintKasten(m.status) : ""}</div>
+    <div class="karte-kopf"><h2>${esc(m.name)}</h2>${art === "tribuene" ? sprintKasten(m.status) : (m.sub ? `<p class="muted">${esc(m.sub)}</p>` : "")}</div>
     <fieldset class="wahl"><legend>Status</legend>${wahl}</fieldset>
     ${termin(m, art, "aus")}
     ${termin(m, art, "ein")}
