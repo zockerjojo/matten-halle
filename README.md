@@ -28,8 +28,8 @@ Den neuen Code unter `zugang/code` eintragen. Alle bisherigen Anmeldungen werden
 - `sub`: Zusatz unter dem Namen, z. B. „Benz · Gelb“
 - `art`: `anlage` oder `tribuene`
 - `status`: bei `anlage` entweder `aufgebaut` (grün) oder `abgebaut` (rot), bei `tribuene` entweder `eingefahren` (grün) oder `ausgefahren` (rot). Fehlt der Status, erscheint der Eintrag rot.
-- `aus`: nächster Wechsel nach draußen (bei `anlage` „wird abgebaut“, bei `tribuene` „wird rausgefahren“). Format `JJJJ-MM-TT`, mit Uhrzeit `JJJJ-MM-TThh:mm`, z. B. `2026-11-16` oder `2026-11-16T08:00`.
-- `ein`: nächster Wechsel zurück (bei `anlage` „wird wieder aufgebaut“, bei `tribuene` „wird reingefahren“), gleiches Format.
+- `aus`: nächster Wechsel nach draußen (bei `anlage` „wird abgebaut“, bei `tribuene` „wird ausgefahren“). Format `JJJJ-MM-TT`, mit Uhrzeit `JJJJ-MM-TThh:mm`, z. B. `2026-11-16` oder `2026-11-16T08:00`.
+- `ein`: nächster Wechsel zurück (bei `anlage` „wird wieder aufgebaut“, bei `tribuene` „wird eingefahren“), gleiches Format.
 
 Ein Termin braucht ein Datum, die Uhrzeit ist optional. Ohne Uhrzeit zeigt die Anzeige nur den Tag. Fehlt ein Termin, steht „Termine folgen“. Die Anzeige nennt immer den nächsten Wechsel zuerst.
 - `reihenfolge`: Sortierung auf der Anzeige
