@@ -12,6 +12,7 @@
 :root{
   --bg:#E9EDEA; --panel:#F7F9F7; --ink:#14201B; --ink-2:#55635C; --line:#C3CCC6;
   --accent:#17694B; --on-accent:#FFFFFF; --fehler:#B3261E;
+  --gruen:#1B7F3B; --rot:#B3261E; --weiss:#FFFFFF;
   --display:"Barlow Condensed","Arial Narrow",sans-serif;
   --body:Barlow,system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:light;
@@ -52,6 +53,12 @@ legend{font-size:14px; color:var(--ink-2); padding:0 0 6px}
 .wahl label{display:flex; align-items:center; gap:12px; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; cursor:pointer; color:var(--ink)}
 .wahl input{width:20px; height:20px; margin:0; accent-color:var(--accent); flex:none}
 .zeit{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:12px}
+.punkt{display:inline-block; flex:none; width:12px; height:12px; border-radius:50%}
+.punkt.gruen{background:var(--gruen)}
+.punkt.rot{background:var(--rot)}
+.kasten{margin:6px 0 0; padding:8px 10px; border-radius:10px; color:var(--weiss); font-family:var(--display); font-weight:600; font-size:18px; line-height:1.15}
+.kasten.gruen{background:var(--gruen)}
+.kasten.rot{background:var(--rot)}
 </style>
 </head>
 <body>
@@ -194,8 +201,8 @@ async function zugangAbgelaufen(err) {
 
 /* Karten: Status je Art, darunter zwei Termine. Ein Termin braucht ein Datum, die Uhrzeit ist optional. */
 const OPTIONEN = {
-  anlage: [["aufgebaut", "Aufgebaut (grüne Anzeige)"], ["abgebaut", "Abgebaut (rote Anzeige)"]],
-  tribuene: [["eingefahren", "Eingefahren (grüne Anzeige)"], ["ausgefahren", "Ausgefahren (rote Anzeige)"]],
+  anlage: [["aufgebaut", "Aufgebaut", "gruen"], ["abgebaut", "Abgebaut", "rot"]],
+  tribuene: [["eingefahren", "Eingefahren", "gruen"], ["ausgefahren", "Ausgefahren", "rot"]],
 };
 const TERMINE = {
   anlage: { aus: "Wird abgebaut am", ein: "Wird wieder aufgebaut am" },
@@ -214,14 +221,33 @@ function termin(m, art, paar) {
     </fieldset>`;
 }
 
+/* Tribüne: grün = eingefahren (nutzbar), sonst rot. Ohne Status gilt rot, wie auf der öffentlichen Anzeige. */
+function sprintAnzeige(status) {
+  return status === "eingefahren"
+    ? { farbe: "gruen", text: "nutzbar" }
+    : { farbe: "rot", text: "nicht nutzbar" };
+}
+function sprintKasten(status) {
+  const { farbe, text } = sprintAnzeige(status);
+  return `<p class="kasten ${farbe}" data-sprint>110 Meter Sprintgerade ${text}</p>`;
+}
+/* Beim Auswählen sofort umstellen, nicht erst nach dem Speichern oder nach dem Verlassen des Feldes */
+function sprintAktualisieren(kartenEl, status) {
+  const kasten = kartenEl.querySelector("[data-sprint]");
+  if (!kasten) return;
+  const { farbe, text } = sprintAnzeige(status);
+  kasten.className = `kasten ${farbe}`;
+  kasten.textContent = `110 Meter Sprintgerade ${text}`;
+}
+
 function karte(m) {
   const art = m.art === "tribuene" ? "tribuene" : "anlage";
   const gruppe = `s-${m.key}`;
   const wahl = OPTIONEN[art]
-    .map(([wert, text]) => `<label><input type="radio" name="${esc(gruppe)}" value="${wert}"${m.status === wert ? " checked" : ""}> ${text}</label>`)
+    .map(([wert, text, farbe]) => `<label><input type="radio" name="${esc(gruppe)}" value="${wert}"${m.status === wert ? " checked" : ""}> <span>${text}</span><span class="punkt ${farbe}" aria-hidden="true"></span></label>`)
     .join("");
   return `<article class="karte" data-key="${esc(m.key)}">
-    <div class="karte-kopf"><h2>${esc(m.name)}</h2>${m.sub ? `<p class="muted">${esc(m.sub)}</p>` : ""}</div>
+    <div class="karte-kopf"><h2>${esc(m.name)}</h2>${m.sub ? `<p class="muted">${esc(m.sub)}</p>` : ""}${art === "tribuene" ? sprintKasten(m.status) : ""}</div>
     <fieldset class="wahl"><legend>Status</legend>${wahl}</fieldset>
     ${termin(m, art, "aus")}
     ${termin(m, art, "ein")}
@@ -274,6 +300,7 @@ liste.addEventListener("change", (e) => {
   const key = kartenEl.dataset.key;
   const meldung = kartenEl.querySelector(".meldung");
   if (e.target.matches('input[type="radio"]')) {
+    sprintAktualisieren(kartenEl, e.target.value);
     speichere(key, { status: e.target.value }, meldung);
     return;
   }
